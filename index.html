@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="si" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>සා.පෙළ ඉතිහාසය - II කොටස (මൊබයිල් ප්‍රශස්තකරණ අධ්‍යයන මධ්‍යස්ථානය)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Custom smooth scroll for mobile tabs and lists */
+        .smooth-scroll {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen pb-16 transition-colors duration-300">
+
+    <!-- Mobile-Optimized Header -->
+    <header class="bg-indigo-700 dark:bg-indigo-950 text-white shadow-md sticky top-0 z-50 border-b border-indigo-800 dark:border-indigo-900">
+        <div class="max-w-4xl mx-auto px-4 py-3.5 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div class="w-full sm:w-auto flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">📚</span>
+                    <h1 class="text-base sm:text-lg font-bold tracking-tight">සා.පෙළ ඉතිහාසය (II කොටස)</h1>
+                </div>
+                <!-- Theme Toggle for Mobile Topbar -->
+                <button id="theme-toggle" class="sm:hidden p-2 rounded-xl bg-indigo-800 dark:bg-indigo-900 hover:bg-indigo-600 transition text-xs flex items-center gap-1 border border-indigo-600/40">
+                    🌓 තේමාව
+                </button>
+            </div>
+            
+            <div class="w-full sm:w-auto flex items-center justify-between sm:justify-end gap-3 text-xs">
+                <div id="stats-badge" class="bg-indigo-800/80 dark:bg-indigo-900/80 px-3 py-1.5 rounded-xl font-medium border border-indigo-600/40 shadow-inner flex items-center gap-1.5">
+                    <span>ප්‍රගතිය:</span> <span id="completed-count" class="font-bold text-amber-300 text-sm">0</span> / 8
+                </div>
+                <button id="theme-toggle-desktop" class="hidden sm:flex p-2.5 rounded-xl bg-indigo-800 dark:bg-indigo-900 hover:bg-indigo-600 transition items-center gap-1.5 px-3 border border-indigo-600/40">
+                    🌓 තේමාව මාරු කරන්න
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
+
+        <!-- Mobile-First Control Panel Card -->
+        <div class="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 space-y-4">
+            <div class="flex flex-col gap-2">
+                <h2 class="text-base sm:text-lg font-bold text-indigo-700 dark:text-indigo-400">ප්‍රශ්න තෝරා ගැනීමේ සහ පුහුණු වීමේ පුවරුව</h2>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                    සියලුම ප්‍රශ්න පිළිවෙළින් බැලීමට හෝ ඔබට අවශ්‍ය <strong>නිශ්චිත එක ප්‍රශ්නයක් පමණක්</strong> තෝරාගෙන පුහුණු වීමට පහත පාලක විකල්ප භාවිත කරන්න. (iii) ප්‍රශ්නය වචන ~100 කින් හා (iv) ප්‍රශ්නය වචන ~250 කින් සවිස්තරාත්මකව සකසා ඇත.
+                </p>
+            </div>
+
+            <!-- Mode Switcher Buttons (Touch Friendly) -->
+            <div class="grid grid-cols-2 gap-2 pt-1">
+                <button onclick="setViewMode('all')" id="btn-mode-all" class="py-3 px-3 text-xs font-semibold rounded-xl border transition bg-indigo-600 text-white border-indigo-600 shadow-sm flex items-center justify-center gap-1.5">
+                    <span>📄</span> සියලුම ප්‍රශ්න
+                </button>
+                <button onclick="setViewMode('single')" id="btn-mode-single" class="py-3 px-3 text-xs font-semibold rounded-xl border transition bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 flex items-center justify-center gap-1.5">
+                    <span>🎯</span> එක ප්‍රශ්නයක් බැගින්
+                </button>
+            </div>
+
+            <!-- Single Question Dropdown (Active only in single mode) -->
+            <div id="single-selector-container" class="hidden pt-2">
+                <label for="question-dropdown" class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">පුහුණු විය යුතු ප්‍රශ්නය තෝරන්න:</label>
+                <select id="question-dropdown" onchange="selectSingleQuestion(this.value)" class="w-full px-3.5 py-3 border border-slate-300 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-950 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-inner">
+                    <option value="2">ප්‍රශ්න අංක 02: ශ්‍රී ලංකාවේ ප්‍රාග්, පූර්ව හා මුල් ඓතිහාසික යුග</option>
+                    <option value="3">ප්‍රශ්න අංක 03: ශ්‍රී ලංකාවේ රාජත්ව සංකල්පය, රාජ්‍ය උරුමය හා රජවරුන්ගේ කාර්යභාරය</option>
+                    <option value="4">ප්‍රශ්න අංක 04: ශ්‍රී ලංකාවේ පැරණි විද්‍යා හා තාක්ෂණය</option>
+                    <option value="5">ප්‍රශ්න අංක 05: මහනුවර රාජධානියේ පරිපාලන සංවිධානය හා පාලකයන්</option>
+                    <option value="6">ප්‍රශ්න අංක 06: පෘතුගීසීන් හා ලන්දේසීන් කෝට්ටේ හා මහනුවර රාජධානි සමග සම්බන්ධතා</option>
+                    <option value="7">ප්‍රශ්න අංක 07: කෝල්බෲක් සිට සෝල්බරි ආණ්ඩුක්‍රම ප්‍රතිසංස්කරණ දක්වා</option>
+                    <option value="8">ප්‍රශ්න අංක 08: ප්‍රංශ හා රුසියන් විප්ලවවල ඓතිහාසික පසුබිම</option>
+                    <option value="9">ප්‍රශ්න අංක 09: පළමු හා දෙවන ලෝක යුද්ධ පිළිබඳ තොරතුරු</option>
+                </select>
+            </div>
+
+            <!-- Search Input Box -->
+            <div class="relative pt-1">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pt-1 text-slate-400 pointer-events-none">🔍</span>
+                <input type="text" id="essay-search" oninput="filterEssays()" placeholder="මාතෘකාව හෝ මූල පදයක් මඟින් සොයන්න..." class="w-full pl-10 pr-4 py-3 border border-slate-300 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-950 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-inner">
+            </div>
+        </div>
+
+        <!-- Essay Cards Dynamic Container -->
+        <div id="essay-container" class="space-y-4 sm:space-y-6">
+            <!-- Injected via JavaScript -->
+        </div>
+
+    </main>
+
+    <!-- Mobile-Friendly Footer -->
+    <footer class="text-center py-6 px-4 text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800 mt-12 bg-white dark:bg-slate-900 shadow-inner">
+        අ.පො.ස. (සාමාන්‍ය පෙළ) විභාගය - ඉතිහාසය II කොටස අධ්‍යයන මධ්‍යස්ථානය © 2026<br>දුරකථන සඳහා විශේෂයෙන් ප්‍රශස්ත කරන ලදී.
+    </footer>
+
+    <!-- Application JavaScript Logic -->
+    <script>
+        const essayData = [
+            {
+                id: 2,
+                title: "ප්‍රශ්න අංක 02: ශ්‍රී ලංකාවේ ප්‍රාග්, පූර්ව හා මුල් ඓතිහාසික යුග",
+                subtitle: "ඉගෙනුම් පලය: ශ්‍රී ලංකාවේ ප්‍රාග්, පූර්ව හා මුල් ඓතිහාසික යුග පිළිබඳව විමර්ශනය කරයි.",
+                content: `
+                    <div class="space-y-4 text-xs sm:text-sm leading-relaxed">
+                        <!-- Part i -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-100 dark:border-slate-800">
+                            <h4 class="font-bold text-indigo-700 dark:text-indigo-400 text-sm sm:text-base mb-2">(i) ශ්‍රී ලංකාවේ ප්‍රාග් ඓතිහාසික මානවයා වාසය කළ වෙරළාශ්‍රිත එළි මහන් වාසස්ථාන තුන සඳහන් කරන්න. (ලකුණු 03)</h4>
+                            <p class="text-slate-600 dark:text-slate-400 mb-1.5 font-medium text-xs">අපේක්ෂිත පිළිතුරු:</p>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300">
+                                <li><strong>මිනිහා ගල්කන්ද</strong></li>
+                                <li><strong>බුන්දල / පතිරාජ වෙල</strong></li>
+                                <li><strong>උඩමළල</strong></li>
+                            </ul>
+                        </div>
+
+                        <!-- Part ii -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-100 dark:border-slate-800">
+                            <h4 class="font-bold text-indigo-700 dark:text-indigo-400 text-sm sm:text-base mb-2">(ii) ප්‍රාග් ඓතිහාසික මානවයාගේ ආහාර රටාවේ දක්නට ලැබුණු ලක්ෂණ දෙකක් ලියා දක්වන්න. (ලකුණු 04)</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300">
+                                <li>සතුන් දඩයම් කිරීම හා මිරිදිය මසුන් ආහාරයට ගැනීම.</li>
+                                <li>ශාක ආහාර, අල වර්ග හා පිෂ්ටය ලබා ගැනීම සඳහා ද්‍රව්‍ය පරිභෝජනය කිරීම.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Part iii (approx 100 words) -->
+                        <div class="p-4 sm:p-5 bg-amber-50/50 dark:bg-slate-950/40 rounded-2xl border border-amber-200 dark:border-slate-800">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
+                                <h4 class="font-bold text-amber-800 dark:text-amber-400 text-sm sm:text-base">(iii) පූර්ව ඓතිහාසික යුගයේ මානව ජීවිතයේ ඇති වූ වෙනස්කම් දෙකක් විස්තර කරන්න. (ලකුණු 05)</h4>
+                                <span class="text-[11px] bg-amber-200/60 dark:bg-amber-950 text-amber-900 dark:text-amber-300 px-2.5 py-1 rounded-full font-medium whitespace-nowrap">වචන ~100 ක පිළිතුර</span>
+                            </div>
+                            <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-sm">
+                                පූර්ව ඓතිහාසික යුගය වන විට ශ්‍රී ලංකාවේ මානව ජීවිතයේ ප්‍රධාන වෙනස්කම් රැසක් සිදු විය. ප්‍රථමයෙන්, මැටි බඳුන් නිර්මාණය කර ගින්නේ පුළුස්සා ආහාර පිසීමට සහ ජලය රැස් කර ගැනීමට භාවිත කිරීම ඇරඹිණි (උදා: රංචමඩම වර්ණාලේපිත මැටි බඳුන්). දෙවනුව, මළසිරුරු හුදෙක් අතහැර දැමීම වෙනුවට මිනී පෙට්ටිවල හෝ කළගෙඩිවල බහා වළ දැමීම වැනි ක්‍රමවත් සුසාන චාරිත්‍ර අනුගමනය කිරීම ආරම්භ විය. මීට අමතරව යකඩ ලෝහ තාක්ෂණය ප්‍රචලිත වීම සහ ස්ථිර වාසස්ථාන ගොඩනගා ගනිමින් කෘෂිකාර්මික ජීවන රටාවකට යොමු වීම මෙම යුගයේ මූලික ලක්ෂණය විය.
+                            </p>
+                        </div>
+
+                        <!-- Part iv (approx 250 words) -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-200 dark:border-slate-800">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
+                                <h4 class="font-bold text-indigo-800 dark:text-indigo-400 text-sm sm:text-base">(iv) මුල් ඓතිහාසික යුගයේ ගම් ජනාවාසවල දක්නට ලැබුණු ලක්ෂණ තුනක් පැහැදිලි කරන්න. (ලකුණු 06)</h4>
+                                <span class="text-[11px] bg-indigo-200/60 dark:bg-indigo-950 text-indigo-900 dark:text-indigo-300 px-2.5 py-1 rounded-full font-medium whitespace-nowrap">වචන ~250 ක පිළිතුර</span>
+                            </div>
+                            <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-sm">
+                                මුල් ඓතිහාසික යුගය ශ්‍රී ලංකාවේ සංවිධානාත්මක සමාජ ක්‍රමයක ආරම්භය සනිටුහන් කළ වැදගත් යුගයකි. මෙම යුගයේ ගම් ජනාවාසවල පහත සඳහන් ප්‍රධාන ලක්ෂණ තුන දැකගත හැකි විය:<br><br>
+                                <strong>1. කුඩා වැව් කේන්ද්‍ර කොට ගම් බිහිවීම (වාපී ගාම):</strong> වියළි කලාපීය භූ විෂමතාවට අනුගත වෙමින් වැසි ජලය රැස් කරගැනීම සඳහා කුඩා වැව් ඉදි කෙරිණි. එම වැව කේන්ද්‍ර කරගනිමින් ජනාවාස ව්‍යාප්ත වූ අතර, ඒවා 'වාපී ගාම' නම් විය (උදා: සුමනවාපීගාම, විහාරවාපීගාම). ගොවිතැන් කටයුතු සාර්ථක කර ගැනීමට මෙම වැව් පද්ධති මූලික විය.<br><br>
+                                <strong>2. වෘත්තීන් හා කාර්යයන් පදනම් කරගත් ගම් බිහිවීම:</strong> සමාජ ශ්‍රම විභජනයත් සමඟ එකම වෘත්තියේ නියැලුණු පිරිස් එකම ප්‍රදේශයක පදිංචි වීමෙන් වෘත්තීය ගම් බිහි විය. උදාහරණ ලෙස ධීවර ගම් (කේවට්ට ගාම), ගොපල්ලන් විසූ ගම් (ගෝපාල ගාම), වරාය ආශ්‍රිත ගම් (පට්ටන ගාම) සහ වෙළෙඳ ගම් (නියම්ගම්) දැක්විය හැකිය.<br><br>
+                                <strong>3. විධිමත් පාලන ක්‍රමයක් සහ ආරක්ෂක විධිවිධාන පැවතීම:</strong> ගමක පවුල් සංඛ්‍යාව 5 සිට 30 දක්වා සීමා වූ අතර, ගම පාලනය කිරීම සඳහා 'ගමික' නම් ප්‍රධානියෙක් විය. ඇතැම් ගම් කැලෑවලින් වෙන් කර තිබූ අතර, ආරක්ෂාව සඳහා වැටවල් ඉදි කර තිබීම (පරික්ඛිත්ත ගාම) මගින් මෙරට මුල්කාලීන ග්‍රාමීය සංවිධානයේ දියුණු ස්වරූපය මනාව පැහැදිලි වේ.
+                            </p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 3,
+                title: "ප්‍රශ්න අංක 03: ශ්‍රී ලංකාවේ රාජත්ව සංකල්පය, රාජ්‍ය උරුමය හා රජවරුන්ගේ කාර්යභාරය",
+                subtitle: "ඉගෙනුම් පලය: ශ්‍රී ලංකාවේ රාජත්ව සංකල්පය, රාජ්‍ය උරුමය හා රජවරුන්ගේ කාර්යභාරය විග්‍රහ කරයි.",
+                content: `
+                    <div class="space-y-4 text-xs sm:text-sm leading-relaxed">
+                        <!-- Part i -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-100 dark:border-slate-800">
+                            <h4 class="font-bold text-indigo-700 dark:text-indigo-400 text-sm sm:text-base mb-2">(i) පැරණි ශ්‍රී ලංකාවේ රාජ්‍ය උරුමය (a) පියාගෙන් පසු පුතාට හිමි වූ අවස්ථා දෙකක්, (b) සහෝදරයාගෙන් සහෝදරයාට හිමි වූ අවස්ථා එකක් අනුපිළිවෙළින් සඳහන් කරන්න. (ලකුණු 03)</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300">
+                                <li>(a) කාවන්තිස්ස රජුගෙන් පසු දුටුගැමුණු කුමරු රජ වීම / වසභ රජුගෙන් පසු වංකනාසිකතිස්ස කුමරු රජ වීම.</li>
+                                <li>(b) දේවානම්පියතිස්ස රජුගෙන් පසු උත්තිය රජ වීම.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Part ii -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-100 dark:border-slate-800">
+                            <h4 class="font-bold text-indigo-700 dark:text-indigo-400 text-sm sm:text-base mb-2">(ii) පහත A සිට D තෙක් තොරතුරු හා සම්බන්ධ රජවරුන් වරහන් වලින් තෝරා අනුපිළිවෙළින් දක්වන්න. (ලකුණු 04)</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300">
+                                <li>A - පණ්ඩුකාභය, B - භාතිකාභය, C - වසභ, D - I වන විජයබාහු.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Part iii (approx 100 words) -->
+                        <div class="p-4 sm:p-5 bg-amber-50/50 dark:bg-slate-950/40 rounded-2xl border border-amber-200 dark:border-slate-800">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
+                                <h4 class="font-bold text-amber-800 dark:text-amber-400 text-sm sm:text-base">(iii) දේවානම්පියතිස්ස රාජ්‍ය සමයේ සිදු වූ ඓතිහාසික සිදුවීම් දෙකක් විස්තර කරන්න. (ලකුණු 05)</h4>
+                                <span class="text-[11px] bg-amber-200/60 dark:bg-amber-950 text-amber-900 dark:text-amber-300 px-2.5 py-1 rounded-full font-medium whitespace-nowrap">වචන ~100 ක පිළිතුර</span>
+                            </div>
+                            <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-sm">
+                                දේවානම්පියතිස්ස රාජ්‍ය සමය ශ්‍රී ලංකා ඉතිහාසයේ හැරවුම් ලක්ෂයකි. පළමුව, අනුබුදු මිහිදු මහ රහතන් වහන්සේ මිහින්තලා පර්වතයට වැඩම කර රජුට සහ පිරිසට බුදු දහම දේශනා කිරීමත් සමඟ මෙරට බෞද්ධ යුගය සහ සංස්කෘතික පුනරුදය ආරම්භ විය. දෙවනුව, ඉන්දියාවේ මෞರ್ಯ අධිරාජයා වූ අසෝක රජුගේ සහයෝගය ඇතිව තෙරසඟමිත්තා තෙරණිය විසින් දක්ෂිණ ශ්‍රී මහා බෝධි ශාඛාව මෙරටට වැඩම කරවා මහමෙව්නා උයනේ රෝපණය කිරීම සිදු විය. මේ හරහා ශ්‍රී ලංකාව හා ඉන්දියාව අතර ආගමික හා රාජ්‍ය තාන්ත්‍රික සබඳතා ඉතාමත් ශක්තිමත් විය.
+                            </p>
+                        </div>
+
+                        <!-- Part iv (approx 250 words) -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-200 dark:border-slate-800">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
+                                <h4 class="font-bold text-indigo-800 dark:text-indigo-400 text-sm sm:text-base">(iv) දුටුගැමුණු රජතුමාගෙන් සිදු වූ සේවාව කරුණු තුනක් ඇසුරෙන් පැහැදිලි කරන්න. (ලකුණු 06)</h4>
+                                <span class="text-[11px] bg-indigo-200/60 dark:bg-indigo-950 text-indigo-900 dark:text-indigo-300 px-2.5 py-1 rounded-full font-medium whitespace-nowrap">වචන ~250 ක පිළිතුර</span>
+                            </div>
+                            <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-sm">
+                                ශ්‍රී ලංකා ඉතිහාසයේ බිහි වූ විශිෂ්ටතම රජෙකු වන දුටුගැමුණු රජතුමාගෙන් රටට, ජාතියට සහ ආගමට ඉටු වූ සේවාව අතිමහත්ය. උන්වහන්සේගේ ප්‍රධාන සේවාවන් තුනක් පහත පරිදි දැක්විය හැකිය:<br><br>
+                                <strong>1. රට එක්සත් කිරීම හා එළාර පරාජය කිරීම:</strong> විවිධ ප්‍රදේශවල විසිරී පැවති බලවේග එක්සත් කර, ආක්‍රමණික එළාර රජු විජිතපුර සටනේදී සහ ඒකාබද්ධ සටන් මගින් පරාජය කර අනුරාධපුරය මූලස්ථාන කරගනිමින් රට එකම ඡජ්ජයක් යටතට පත් කළේය. මෙය මෙරට ප්‍රථම සංවිධානාත්මක ජාතික නිදහස් සටන විය.<br><br>
+                                <strong>2. බෞද්ධ ශාසනික හා වාස්තු විද්‍යාත්මක සංවර්ධනය:</strong> බුදු දහමේ චිරපැවැත්ම උදෙසා අනුරාධපුරයේ මහා ස්ථුපය හෙවත් රුවන්වැලි සෑය, මිරිසවැටිය සහ ප්‍රාසාදයක් වූ ලෝවාමහාපාය ඉදි කරවන ලදී. මේවා අතීත සිංහල වාස්තු විද්‍යාවේ විශිෂ්ටතම නිර්මාණ ලෙස සැලකේ.<br><br>
+                                <strong>3. ජනතා සුබසාධනය හා ආදර්ශවත් පාලනය:</strong> රජය වෙනුවෙන් සටන් කරන විට ජනතාවට බාධා නොවන අයුරින් කටයුතු කරමින්, රෝහල් ඉදිකිරීම සහ රුවන්වැලි සෑය ඉදිකිරීමේදී සේවකයන්ට නිසි වැටුප් හා දන්සැල් ලබා දෙමින් ආදර්ශවත් පාලනයක් ගෙන ගියේය.
+                            </p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 4,
+                title: "ප්‍රශ්න අංක 04: ශ්‍රී ලංකාවේ පැරණි විද්‍යා හා තාක්ෂණය",
+                subtitle: "ඉගෙනුම් පලය: ශ්‍රී ලංකාවේ පැරණි විද්‍යා හා තාක්ෂණය පිළිබඳ තොරතුරු විග්‍රහ කරයි.",
+                content: `
+                    <div class="space-y-4 text-xs sm:text-sm leading-relaxed">
+                        <!-- Part i -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-100 dark:border-slate-800">
+                            <h4 class="font-bold text-indigo-700 dark:text-indigo-400 text-sm sm:text-base mb-2">(i) ඇළහැර ඇළ මගින් ජලය සපයන වැටී තුනක් සඳහන් කරන්න. (ලකුණු 03)</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300">
+                                <li>මින්නේරිය වැව, ගිරිතලේ වැව, කන්තලේ වැව.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Part ii -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-100 dark:border-slate-800">
+                            <h4 class="font-bold text-indigo-700 dark:text-indigo-400 text-sm sm:text-base mb-2">(ii) වැවක ප්‍රධාන අංග හතරක් ලියා දක්වන්න. (ලකුණු 04)</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300">
+                                <li>වැව් බැම්ම, රළපනාව, සොරොව්ව, බිසෝ කොටුව (හෝ වාන).</li>
+                            </ul>
+                        </div>
+
+                        <!-- Part iii (approx 100 words) -->
+                        <div class="p-4 sm:p-5 bg-amber-50/50 dark:bg-slate-950/40 rounded-2xl border border-amber-200 dark:border-slate-800">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
+                                <h4 class="font-bold text-amber-800 dark:text-amber-400 text-sm sm:text-base">(iii) (a) යකඩ නිස්සාරණ තාක්ෂණය පැවති ස්ථාන දෙකක් සහ (b) යකඩ නිස්සාරණය සිදු කළ ආකාරය විස්තර කරන්න. (ලකුණු 05)</h4>
+                                <span class="text-[11px] bg-amber-200/60 dark:bg-amber-950 text-amber-900 dark:text-amber-300 px-2.5 py-1 rounded-full font-medium whitespace-nowrap">වචන ~100 ක පිළිතුර</span>
+                            </div>
+                            <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-sm">
+                                අතීත ශ්‍රී ලංකාවේ දියුණු යකඩ නිස්සාරණ තාක්ෂණයක් පැවති බවට බලංගොඩ සමනල වැව සහ සීගිරිය අලකොලවැව ප්‍රදේශවලින් සාක්ෂි හමුවී ඇත. මෙම ක්‍රමවේදයේදී ස්වභාවික සුළං බලය උපරිමයෙන් භාවිත කර ඇත. සමනල වැව වැනි කඳුකර ප්‍රදේශවල කඳු මුදුනට නිතර බමන ප්‍රබල මෝසම් සුළං උදුන් තුළට ඇතුළු වන අයුරින් යකඩ උදුන් ඉදිකරන ලදී. පසුව යපස් සහ මරන් අඟුරු මැටි භාජනවල දමා, සුළං බලය උපකාරයෙන් ගිනි උණු කර උසස් තත්ත්වයේ යකඩ නිස්සාරණය කර ගැනීම පුරාණ ශ්‍රී ලංකාවේ විද්‍යාත්මක විශිෂ්ටත්වය කියාපායි.
+                            </p>
+                        </div>
+
+                        <!-- Part iv (approx 250 words) -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-200 dark:border-slate-800">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
+                                <h4 class="font-bold text-indigo-800 dark:text-indigo-400 text-sm sm:text-base">(iv) සීගිරියේ විශිෂ්ට නගර හා උද්‍යාන නිර්මාණ තාක්ෂණයක් පැවති බව කරුණු තුනක් ඇසුරෙන් පැහැදිලි කරන්න. (ලකුණු 06)</h4>
+                                <span class="text-[11px] bg-indigo-200/60 dark:bg-indigo-950 text-indigo-900 dark:text-indigo-300 px-2.5 py-1 rounded-full font-medium whitespace-nowrap">වචන ~250 ක පිළිතුර</span>
+                            </div>
+                            <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-sm">
+                                ලෝක ප්‍රසිද්ධ සීගිරි පුරවරය යනු කාශ්‍යප රජතුමා විසින් ඉදි කරන ලද විශිෂ්ට නගර නිර්මාණ හා උද්‍යාන විද්‍යාවේ අග්‍රගන්‍ය නිර්මාණයකි. එහි පැවති දියුණු තාක්ෂණය පහත සඳහන් කරුණු තුනින් මනාව පැහැදිලි වේ:<br><br>
+                                <strong>1. පර්වතය මත මාලිගා සංකීර්ණය ඉදිකිරීමේ තාක්ෂණය:</strong> මීටර් 200ක් පමණ උසැති අභියෝගාත්මක සීගිරි පර්වතය මත මාලිගා, ජල පොකුණු සහ ගෘහ නිර්මාණ ශිල්පය ක්‍රියාත්මක කිරීම අදටත් විස්මිතය. ගුරු භූමියේ බර හා ජල පීඩනය පාලනය කරමින් කඳු මුදුන වාසයට සුදුසු ලෙස සකසා තිබුණි.<br><br>
+                                <strong>2. ආරක්ෂක ක්‍රමවේද සහ දිය අගල් පද්ධතිය:</strong> නගරය වටා ගැඹුරු දිය අගල් පද්ධතියක් ඉදි කර තිබූ අතර, පිටත හා ඇතුළත ආරක්ෂාව සඳහා ගඩොලින් තැනූ උස ප්‍රාකාර යොදා ගන්නා ලදී. මෙය සතුරු උවදුරුවලින් නගරය ආරක්ෂා කර ගැනීමට යොදාගත් විශිෂ්ට යුධ තාක්ෂණික ක්‍රමයකි.<br><br>
+                                <strong>3. ජල උද්‍යාන සහ භූගත කාණු පද්ධතිය:</strong> සීගිරියේ ඇති ජල උද්‍යාන, මනරම් පොකුණු සහ ජල මල් කිසිදු යාන්ත්‍රික බලයකින් තොරව ගුරුත්වාකර්ෂණය සහ පීඩන තාක්ෂණය මත ක්‍රියාත්මක විය. මීට අමතරව වැසි ජලය නිසි පරිදි බැහැර කිරීමට ඉදි කළ භූගත කාණු පද්ධතිය මඟින් පුරාණ ලාංකිකයන්ගේ දියුණු ඉංජිනේරු දැනුම මනාව තහවුරු වේ.
+                            </p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 5,
+                title: "ප්‍රශ්න අංක 05: මහනුවර රාජධානියේ පරිපාලන සංවිධානය හා පාලකයන්",
+                subtitle: "ඉගෙනුම් පලය: මහනුවර රාජධානියේ පරිපාලන සංවිධානය හා පාලකයන් පිළිබඳ තොරතුරු විස්තර කරයි.",
+                content: `
+                    <div class="space-y-4 text-xs sm:text-sm leading-relaxed">
+                        <!-- Part i -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-100 dark:border-slate-800">
+                            <h4 class="font-bold text-indigo-700 dark:text-indigo-400 text-sm sm:text-base mb-2">(i) අයිතිය හා භුක්තිය පදනම් කරගෙන මහනුවර රාජධානියේ ඉඩම් බෙදා තිබූ කොටස් තුනක් ලියා දක්වන්න. (ලකුණු 03)</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300">
+                                <li>ගබඩාගම්, නින්දගම්, විහාරගම් (හෝ දේවාලගම් / පරවේණිගම්).</li>
+                            </ul>
+                        </div>
+
+                        <!-- Part ii -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-100 dark:border-slate-800">
+                            <h4 class="font-bold text-indigo-700 dark:text-indigo-400 text-sm sm:text-base mb-2">(ii) පළමුවන විමලධර්ම සූරිය රජතුමා බලයට පත්වීමත් සමග මුහුණ දුන් අභියෝග දෙකක් සඳහන් කරන්න. (ලකුණු 04)</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300">
+                                <li>නීත්‍යනුකූල රාජ්‍ය උරුමයක් නොවීම සහ පෘතුගීසි ග්‍රහණයෙන් උඩරට රාජධානිය බේරා ගැනීම.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Part iii (approx 100 words) -->
+                        <div class="p-4 sm:p-5 bg-amber-50/50 dark:bg-slate-950/40 rounded-2xl border border-amber-200 dark:border-slate-800">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
+                                <h4 class="font-bold text-amber-800 dark:text-amber-400 text-sm sm:text-base">(iii) මහනුවර රාජධානියේ ප්‍රාදේශීය පාලනය ක්‍රියාත්මක වූ ආකාරය කරුණු දෙකක් යටතේ විස්තර කරන්න. (ලකුණු 05)</h4>
+                                <span class="text-[11px] bg-amber-200/60 dark:bg-amber-950 text-amber-900 dark:text-amber-300 px-2.5 py-1 rounded-full font-medium whitespace-nowrap">වචන ~100 ක පිළිතුර</span>
+                            </div>
+                            <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-sm">
+                                මහනුවර රාජධානියේ ප්‍රාදේශීය පාලනය රට සහ දිසාව ලෙස සංවිධානය වී තිබුණි. මධ්‍යම ප්‍රදේශය 'රට' 9 කට බෙදා තිබූ අතර (උදා: උඩුනුවර, යටිනුවර), ඒවා 'රටේ මහත්වරුන්' යටතේ පාලනය විය. බාහිර ප්‍රදේශ දිසාවනි 12 කට බෙදා ඒවා 'දිසාව' නම් ප්‍රධානීන් යටතේ පාලනය කෙරිණි. දිසාවනි තවදුරටත් කෝරාළ සහ පත්තු ලෙස බෙදා මුහන්දිරම්, විදානේ වැනි නිලධාරීන් හරහා බදු එකතු කිරීම සහ අධිකරණ බලතල ක්‍රියාත්මක කරමින් විධිමත් පරිපාලන ජාලයක් පවත්වාගෙන ගියේය.
+                            </p>
+                        </div>
+
+                        <!-- Part iv (approx 250 words) -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-200 dark:border-slate-800">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
+                                <h4 class="font-bold text-indigo-800 dark:text-indigo-400 text-sm sm:text-base">(iv) කීර්ති ශ්‍රී රාජසිංහ රාජ්‍ය සමයේ වැදගත්කම කරුණු තුනක් ඇසුරෙන් පැහැදිලි කරන්න. (ලකුණු 06)</h4>
+                                <span class="text-[11px] bg-indigo-200/60 dark:bg-indigo-950 text-indigo-900 dark:text-indigo-300 px-2.5 py-1 rounded-full font-medium whitespace-nowrap">වචන ~250 ක පිළිතුර</span>
+                            </div>
+                            <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-sm">
+                                මහනුවර රාජධානියේ ස්වර්ණමය යුගයක් ලෙස සැලکෙන කීර්ති ශ්‍රී රාජසිංහ රාජ්‍ය සමය (ක්‍රි.ව. 1747-1782) රටට සහ බුදු දහමට කළ සේවාවන් නිසා අතිශයින් වැදගත් වේ. එම සමයේ වැදගත්කම පෙන්නුම් කරන ප්‍රධාන කරුණු තුනක් පහත දැක්වේ:<br><br>
+                                <strong>1. බෞද්ධ ශාසනික ප්‍රබෝධය හා උපසම්පදාව ගෙන ඒම:</strong> වැලිවිට සරණංකර හිමියන්ගේ අනුග්‍රහයෙන් සියම් දේශයෙන් (තායිලන්තයෙන්) උපසම්පදාව මෙරටට ගෙන 와 සියම් නිකාය පිහිටුවීම සහ සංඝරාජ තනතුර ඇති කිරීම මගින් විනාශය කරා ගිය බුදු සසුන යළි නගා සිටුවීය.<br><br>
+                                <strong>2. වෙහෙර විහාර ඉදි කිරීම හා ප්‍රතිසංස්කරණය:</strong> දිවයින පුරා පැරණි විහාරස්ථාන ප්‍රතිසංස්කරණය කිරීම සහ නව විහාරස්ථාන ඉදි කිරීම සිදු විය (උදා: ගංගාරාම විහාරය, දඹුලු විහාරය, මල්වතු සහ අස්ගිරි මහා විහාර). මේ හරහා කලාව හා වාස්තු විද්‍යාව දියුණු විය.<br><br>
+                                <strong>3. දළදා පෙරහැර වර්තමාන ක්‍රමයට සංවිධානය කිරීම:</strong> වාර්ෂිකව පවත්වනු ලැබූ ඇषाළ පෙරහැරට දේවාල පෙරහැර ද එක් කර, අද පවතින අයුරින් අතිශය අලංකාර ලෙස දළදා පෙරහැර පවත්වන සම්ප්‍රදාය ආරම්භ කරන ලදී.
+                            </p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 6,
+                title: "ප්‍රශ්න අංක 06: පෘතුගීසීන් හා ලන්දේසීන් කෝට්ටේ හා මහනුවර රාජධානි සමග පැවති සම්බන්ධතා",
+                subtitle: "ඉගෙනුම් පලය: පෘතුගීසීන් හා ලන්දේසීන් කෝට්ටේ හා මහනුවර රාජධානි සමග පැවැති සම්බන්ධතා විමර්ශනය කරයි.",
+                content: `
+                    <div class="space-y-4 text-xs sm:text-sm leading-relaxed">
+                        <!-- Part i -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-100 dark:border-slate-800">
+                            <h4 class="font-bold text-indigo-700 dark:text-indigo-400 text-sm sm:text-base mb-2">(i) පෘතුගීසින් පැමිණෙන විට මෙරට පැවති රාජධානි තුන සඳහන් කරන්න. (ලකුණු 03)</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300">
+                                <li>කෝට්ටේ රාජධානිය, උඩරට රාජධානිය, යාපන රාජධානිය.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Part ii -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-100 dark:border-slate-800">
+                            <h4 class="font-bold text-indigo-700 dark:text-indigo-400 text-sm sm:text-base mb-2">(ii) පෘතුගීසීන් විසින් උඩරටට එල්ල කරන ලද ආක්‍රමණ අසාර්ථක වීමට බලපෑ හේතු දෙකක් සඳහන් කරන්න. (ලකුණු 04)</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300">
+                                <li>උඩරට ස්වාභාවික කඳුකර භූගෝලීය පිහිටීම සහ උඩරැටියන්ගේ ගරිල්ලා යුධ ක්‍රම.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Part iii (approx 100 words) -->
+                        <div class="p-4 sm:p-5 bg-amber-50/50 dark:bg-slate-950/40 rounded-2xl border border-amber-200 dark:border-slate-800">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
+                                <h4 class="font-bold text-amber-800 dark:text-amber-400 text-sm sm:text-base">(iii) පෘතුගීසීන් විසින් කෝට්ටේ රාජ්‍යය සමග පවත්වන ලද සබඳතා කරුණු දෙකක් ඇසුරෙන් විස්තර කරන්න. (ලකුණු 05)</h4>
+                                <span class="text-[11px] bg-amber-200/60 dark:bg-amber-950 text-amber-900 dark:text-amber-300 px-2.5 py-1 rounded-full font-medium whitespace-nowrap">වචන ~100 ක පිළිතුර</span>
+                            </div>
+                            <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-sm">
+                                පෘතුගීසීන් ලංකාවට පැමිණීමෙන් පසු කෝට්ටේ රාජ්‍යය සමඟ ඉතා සමීප වෙළෙඳ හා ආරක්ෂක ගිවිසුම් ඇති කර ගත්හ. ලොරෙන්ජෝ ද අල්මේදා කොළඹට පැමිණීමෙන් පසු කෝට්ටේ රජුගේ අවසරය මත කුරුඳු වෙළෙඳ ඒකාධිකාරය ලබා ගනිමින් වෙළෙඳ ගබඩා ඉදි කළහ. පසුව කෝට්ටේ අභ්‍යන්තර අරගලවලදී රජුට ආරක්ෂාව සපයමින් බලය තහවුරු කරගත් අතර, ක්‍රමයෙන් බුවනෙකබාහු රජුගේ මරණයෙන් පසු ධර්මපාල කුමරු හරහා 1580 දී තෑගි ඔප්පුවකින් කෝට්ටේ රාජ්‍යයේ නීත්‍යනුකූල අයිතිය පෘතුගීසි රජුට පවරා දීමට කටයුතු කළහ.
+                            </p>
+                        </div>
+
+                        <!-- Part iv (approx 250 words) -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-200 dark:border-slate-800">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
+                                <h4 class="font-bold text-indigo-800 dark:text-indigo-400 text-sm sm:text-base">(iv) උඩරට රාජ්‍යය සම්බන්ධයෙන් ලන්දේසීන් අනුගමනය කළ ප්‍රතිපත්තියේ වැදගත් ලක්ෂණ තුනක් පැහැදිලි කරන්න. (ලකුණු 06)</h4>
+                                <span class="text-[11px] bg-indigo-200/60 dark:bg-indigo-950 text-indigo-900 dark:text-indigo-300 px-2.5 py-1 rounded-full font-medium whitespace-nowrap">වචන ~250 ක පිළිතුර</span>
+                            </div>
+                            <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-sm">
+                                ලන්දේසීන් උඩරට රාජධානිය සමඟ කටයුතු කිරීමේදී පෘතුගීසීන්ට වඩා වෙනස්, කූට සහ කපටි ප්‍රතිපත්තියක් අනුගමනය කළහ. ඔවුන්ගේ ප්‍රතිපත්තියේ ප්‍රධාන ලක්ෂණ තුනක් පහත පරිදි දැක්විය හැකිය:<br><br>
+                                <strong>1. සාමකාමී සබඳතා පවත්වා ගැනීම හා හොඳ හිත දිනා ගැනීම:</strong> ලන්දේසීන් උඩරට රජු සමඟ ගැටුම්වලට පැටලීමෙන් වැළකී, රජුට තෑගි බෝග යැවීම, දූත පිරිස් යැවීම සහ ගෞරවනීය ආමන්ත්‍රණ භාවිත කරමින් මිත්‍රත්වය පෙන්වූහ.<br><br>
+                                <strong>2. ආගමික අවශ්‍යතා සඳහා සහාය වීම:</strong> උඩරට රජවරුන්ට බෞද්ධ කටයුතු කරගෙන යාමට සහ සියම් දේශයෙන් උපසම්පදාව ගෙන ඒමට අවශ්‍ය නැව් පහසුකම් ලබා දීම මගින් රජුගේ විශ්වාසය දිනා ගැනීමට සමත් වූහ.<br><br>
+                                <strong>3. උපරිම ආර්ථික වාසි ලබා ගැනීම සහ ගිවිසුම් ඇති කර ගැනීම:</strong> 1638 සහ 1766 ගිවිසුම් හරහා වෙළෙඳ ඒකාධිකාරය තහවුරු කරගත් අතර, රජුට පාලනය කළ නොහැකි වූ විටෙක බලය පෙන්වමින් උඩරට ආක්‍රමණය කිරීමටද (1764-1765) පසුබට නොවූහ.
+                            </p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 7,
+                title: "ප්‍රශ්න අංක 07: කෝල්බෲක් ප්‍රතිසංස්කරණයේ සිට සෝල්බරි ආණ්ඩුක්‍රම ප්‍රතිසංස්කරණ දක්වා",
+                subtitle: "ඉගෙනුම් පලය: කෝල්බෲක් ආණ්ඩුක්‍රම ප්‍රතිසංස්කරණයේ සිට සෝල්බරි ආණ්ඩුක්‍රම ප්‍රතිසංස්කරණ දක්වා තොරතුරු විග්‍රහ කරයි.",
+                content: `
+                    <div class="space-y-4 text-xs sm:text-sm leading-relaxed">
+                        <!-- Part i -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-100 dark:border-slate-800">
+                            <h4 class="font-bold text-indigo-700 dark:text-indigo-400 text-sm sm:text-base mb-2">(i) කෝල්බෲක් ප්‍රතිසංස්කරණ අනුව ශ්‍රී ලංකාව බෙදන ලද පළාත් අතුරෙන් තුනක් සඳහන් කරන්න. (ලකුණු 03)</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300">
+                                <li>බස්නාහිර පළාත, දකුණු පළාත, නැගෙනහිර පළාත (හෝ උතුරු/මධ්‍යම පළාත).</li>
+                            </ul>
+                        </div>
+
+                        <!-- Part ii -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-100 dark:border-slate-800">
+                            <h4 class="font-bold text-indigo-700 dark:text-indigo-400 text-sm sm:text-base mb-2">(ii) විසිවන සියවස ආරම්භයේ ශ්‍රී ලාංකික මධ්‍යම පන්තිය විසින් ආණ්ඩුක්‍රම ප්‍රතිසංස්කරණ පිළිබඳ කරන ලද ඉල්ලීම් දෙකක් ලියා දක්වන්න. (ලකුණු 04)</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300">
+                                <li>ව්‍යවස්ථාදායක සභාවේ නිල නොලත් සාමාජික සංඛ්‍යාව වැඩි කිරීම සහ ඡන්ද බලයෙන් නියෝජිතයන් තෝරා ගැනීමට ඉඩ සැලසීම.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Part iii (approx 100 words) -->
+                        <div class="p-4 sm:p-5 bg-amber-50/50 dark:bg-slate-950/40 rounded-2xl border border-amber-200 dark:border-slate-800">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
+                                <h4 class="font-bold text-amber-800 dark:text-amber-400 text-sm sm:text-base">(iii) ඩොනමෝර් ආණ්ඩුක්‍රමය යටතේ පිහිටුවන ලද විධායක කාරක සභා ක්‍රමය කරුණු දෙකක් ඇසුරෙන් විස්තර කරන්න. (ලකුණු 05)</h4>
+                                <span class="text-[11px] bg-amber-200/60 dark:bg-amber-950 text-amber-900 dark:text-amber-300 px-2.5 py-1 rounded-full font-medium whitespace-nowrap">වචන ~100 ක පිළිතුර</span>
+                            </div>
+                            <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-sm">
+                                ඩොනමෝර් ආණ්ඩුක්‍රමය මගින් හඳුන්වා දුන් විධායක කාරක සභා ක්‍රමය යටතේ රාජ්‍ය මන්ත්‍රණ සභාවේ සියලුම සාමාජිකයන් කාරක සභා 7 කට බෙදනු ලැබීය. ස්වදේශ, සෞඛ්‍ය, අධ්‍යාපන සහ කෘෂිකර්ම ආදී ප්‍රධාන විෂය ක්ෂේත්‍ර මෙම කාරක සභා වෙත පැවරුණු අතර, එක් එක් සභාවේ සභාපතිවරයා අදාළ විෂය භාර ඇමතිවරයා විය. මේ හරහා ලාංකික නායකයන්ට ප්‍රායෝගික පාලන අත්දැකීම් ලැබුණු අතර, නිදහස් අධ්‍යාපනය සහ ගොවිජනපද ව්‍යාපාර වැනි ජනතා හිතවාදී සංවර්ධන ව්‍යාපෘති රැසක් සාර්ථකව ක්‍රියාත්මක කිරීමට හැකි විය.
+                            </p>
+                        </div>
+
+                        <!-- Part iv (approx 250 words) -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-200 dark:border-slate-800">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
+                                <h4 class="font-bold text-indigo-800 dark:text-indigo-400 text-sm sm:text-base">(iv) සෝල්බරි ආණ්ඩුක්‍රම ප්‍රතිසංස්කරණ යටතේ හඳුන්වා දෙන ලද අග්‍රාණ්ඩුකාරවරයා, ද්විමණ්ඩල පාර්ලිමේන්තුව සහ අගමැති හා කැබිනට් මණ්ඩලය පැහැදිලි කරන්න. (ලකුණු 06)</h4>
+                                <span class="text-[11px] bg-indigo-200/60 dark:bg-indigo-950 text-indigo-900 dark:text-indigo-300 px-2.5 py-1 rounded-full font-medium whitespace-nowrap">වචන ~250 ක පිළිතුර</span>
+                            </div>
+                            <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-sm">
+                                ක්‍රි.ව. 1948 දී ශ්‍රී ලංකාවට නිදහස ලබා දීමට මූලික වූ සෝල්බරි ආණ්ඩුක්‍රම ප්‍රතිසංස්කරණ මගින් ප්‍රධාන රාජ්‍ය ආයතන තුනක් හඳුන්වා දෙන ලදී:<br><br>
+                                <strong>1. අග්‍රාණ්ඩුකාරවරයා (Governor-General):</strong> පැරණි ආණ්ඩුකාර තනතුර අහෝසි කර මෙම තනතුර පිහිටුවන ලදී. ඔහු බ්‍රිතාන්‍ය රැජිනගේ ලංකා නියෝජිතයා ලෙස කටයුතු කළ නමුත්, නාමමාත්‍ර විධායකයෙකු වූ බැවින් අගමැතිගේ උපදෙස් මත පමණක් ක්‍රියා කළේය.<br><br>
+                                <strong>2. ද්විමණ්ඩල පාර්ලිමේන්තුව:</strong> ව්‍යවස්ථාදායක කටයුතු සඳහා මහජන මන්ත්‍රී මණ්ඩලය සහ සෙනෙට් සභාව යන සභා දෙකකින් සමන්විත ද්විමණ්ඩල ක්‍රමයක් ඇති විය. මහජන මන්ත්‍රී මණ්ඩලයට සාමාජිකයන් 101 ක් ඡන්දයෙන් සහ පත්කිරීමෙන් ඇතුළත් විය.<br><br>
+                                <strong>3. අගමැති සහ කැබිනට් මණ්ඩලය:</strong> විධායක බලය දරන ලද කැබිනට් මණ්ඩලයේ ප්‍රධානියා අගමැති වූ අතර, පාර්ලිමේන්තුවේ බහුතර බලය ඇති නායකයා අගමැති ලෙස පත් විය. කැබිනට් මණ්ඩලය පාර්ලිමේන්තුවට සාමූහිකව වගකිව යුතු විය.
+                            </p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 8,
+                title: "ප්‍රශ්න අංක 08: ප්‍රංශ හා රුසියන් විප්ලවවල ඓතිහාසික පසුබිම",
+                subtitle: "ඉගෙනුම් පලය: ප්‍රංශ හා රුසියන් විප්ලවවල ඓතිහාසික පසුබිම විග්‍රහ කරයි.",
+                content: `
+                    <div class="space-y-4 text-xs sm:text-sm leading-relaxed">
+                        <!-- Part i -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-100 dark:border-slate-800">
+                            <h4 class="font-bold text-indigo-700 dark:text-indigo-400 text-sm sm:text-base mb-2">(i) ප්‍රංශ විප්ලවයට බලපෑ දාර්ශනික මතවාද ඉදිරිපත් කළ දාර්ශනිකයින් තිදෙනකු නම් කරන්න. (ලකුණු 03)</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300">
+                                <li>මොන්ටෙස්ක්‍යු, රූසෝ, වෝල්ටෙයාර්.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Part ii -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-100 dark:border-slate-800">
+                            <h4 class="font-bold text-indigo-700 dark:text-indigo-400 text-sm sm:text-base mb-2">(ii) (a) අමෙරිකන් නිදහස් සටන සහ (b) ප්‍රංශ විප්ලවය ආරම්භ වීමට බලපාන ලද ආසන්න හේතුව අනුපිළිවෙළින් සඳහන් කරන්න. (ලකුණු 04)</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300">
+                                <li>(a) බොස්ටන් තේ සාදය, (b) බැස්ටිල් බන්ධනාගාරයට පහර දී සිරකරුවන් නිදහස් කිරීම.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Part iii (approx 100 words) -->
+                        <div class="p-4 sm:p-5 bg-amber-50/50 dark:bg-slate-950/40 rounded-2xl border border-amber-200 dark:border-slate-800">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
+                                <h4 class="font-bold text-amber-800 dark:text-amber-400 text-sm sm:text-base">(iii) ප්‍රංශ විප්ලවයේ ප්‍රතිඵල දෙකක් විස්තර කරන්න. (ලකුණු 05)</h4>
+                                <span class="text-[11px] bg-amber-200/60 dark:bg-amber-950 text-amber-900 dark:text-amber-300 px-2.5 py-1 rounded-full font-medium whitespace-nowrap">වචන ~100 ක පිළිතුර</span>
+                            </div>
+                            <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-sm">
+                                ප්‍රංශ විප්ලවය ලෝක ඉතිහාසයට දැවැන්ත බලපෑමක් කළ සිදුවීමකි. ප්‍රථමයෙන්, ප්‍රංශයේ නිරපේක්ෂ රාජාණ්ඩුක්‍රමය බිඳ වැටී XVI වන ලුවී රජුගේ ඒකාධිකාරී පාලනය අවසන් වීම සහ 1791 මූලික මිනිස් අයිතිවාසිකම් ප්‍රකාශනය බිහි වීම සිදු විය. දෙවනුව, 'නිදහස, සමානාත්මතාවය සහ සහෝදරත්වය' යන විප්ලවීය අදහස් යුරෝපය පුරා පැතිරී යමින් රජවරුන්ගේ සහ වැඩවසම් ක්‍රමයේ බලයට අභියෝග කිරීමට ලෝක ප්‍රජාවට මඟ පෙන්වීම මෙම විප්ලවයේ ප්‍රධාන ප්‍රතිඵලය විය.
+                            </p>
+                        </div>
+
+                        <!-- Part iv (approx 250 words) -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-200 dark:border-slate-800">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
+                                <h4 class="font-bold text-indigo-800 dark:text-indigo-400 text-sm sm:text-base">(iv) රුසියන් විප්ලවයෙන් පසු එරට ඇති වූ වෙනස්කම් තුනක් පැහැදිලි කරන්න. (ලකුණු 06)</h4>
+                                <span class="text-[11px] bg-indigo-200/60 dark:bg-indigo-950 text-indigo-900 dark:text-indigo-300 px-2.5 py-1 rounded-full font-medium whitespace-nowrap">වචන ~250 ක පිළිතුර</span>
+                            </div>
+                            <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-sm">
+                                ක්‍රි.ව. 1917 රුසියන් විප්ලවය සාර්ථක වීමෙන් පසු එරට දේශපාලන, ආර්ථික සහ සමාජ ව්‍යුහය තුළ අතිමහත් වෙනස්කම් රැසක් සිදු විය. එම වෙනස්කම් අතර ප්‍රධාන කරුණු තුනක් පහත පරිදි වේ:<br><br>
+                                <strong>1. සෝවියට් සමාජවාදී සමූහාණ්ඩුවක් (USSR) බිහිවීම:</strong> සාර් රජුගේ ඒකාධිකාරී හා දැඩි මර්දනකාරී පාලනය සම්පූර්ණයෙන්ම බිඳ වැටී, ලොව ප්‍රථම සමාජවාදී කම්කරු රාජ්‍යය රුසියාව කේන්ද්‍ර කරගනිමින් බිහි විය.<br><br>
+                                <strong>2. ඉඩම් හා කෘෂිකාර්මික ප්‍රතිසංස්කරණ:</strong> පෞද්ගලික විශාල ඉඩම් අයිතිය නීතියෙන් අහෝසි කර ගොවීන්ට ඉඩම්වල අයිතිය ලබා දෙන ලදී. කුඩා ගොවිපළවල් එකතු කර විශාල සමූහ ගොවිපළවල් (Collective Farms) ක්‍රමය ක්‍රියාත්මක කිරීම හරහා කෘෂිකාර්මික නිෂ්පාදනය නව මාවතකට යොමු විය.<br><br>
+                                <strong>3. කර්මාන්ත හා බැංකු ජනසතු කිරීම:</strong> පෞද්ගලික ව්‍යවසාය වෙනුවට පොදු ව්‍යවසාය පිළිගනිමින් කර්මාන්තශාලා, බැංකු සහ ප්‍රවාහන සේවා රාජ්‍ය පාලනයට යටත් කෙරිණි. මේ හරහා රට තුළ සමාජවාදී ආර්ථික රටාවක් ස්ථාපිත විය.
+                            </p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 9,
+                title: "ප්‍රශ්න අංක 09: පළමු හා දෙවන ලෝක යුද්ධ පිළිබඳ තොරතුරු",
+                subtitle: "ඉගෙනුම් පලය: පළමු හා දෙවන ලෝක යුද්ධ පිළිබඳ තොරතුරු විග්‍රහ කරයි.",
+                content: `
+                    <div class="space-y-4 text-xs sm:text-sm leading-relaxed">
+                        <!-- Part i -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-100 dark:border-slate-800">
+                            <h4 class="font-bold text-indigo-700 dark:text-indigo-400 text-sm sm:text-base mb-2">(i) පළමුවන ලෝක මහා සංග්‍රාමයේ පරාජිත පිලට අයත් රටවල් තුනක් නම් කරන්න. (ලකුණු 03)</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300">
+                                <li>ජර්මනිය, ඔස්ට්‍රියා-හංගේරියාව, තුර්කිය (ඔටෝමන් సామ్రాජ්යය).</li>
+                            </ul>
+                        </div>
+
+                        <!-- Part ii -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-100 dark:border-slate-800">
+                            <h4 class="font-bold text-indigo-700 dark:text-indigo-400 text-sm sm:text-base mb-2">(ii) අමෙරිකා එක්සත් ජනපදය (a) පළමුවන ලෝක මහා සංග්‍රාමයට සහ (b) දෙවන ලෝක මහා සංග්‍රාමයට සම්බන්ධ වීමට බලපෑ ආසන්නතම හේතුව අනුපිළිවෙළින් සඳහන් කරන්න. (ලකුණු 04)</h4>
+                            <ul class="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300">
+                                <li>(a) ලුසිටානියා මගී නැව ගිල්වා දැමීම, (b) පර්ල් වරායේ අමෙරිකානු නාවුක කඳවුරට බෝම්බ හෙළීම.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Part iii (approx 100 words) -->
+                        <div class="p-4 sm:p-5 bg-amber-50/50 dark:bg-slate-950/40 rounded-2xl border border-amber-200 dark:border-slate-800">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
+                                <h4 class="font-bold text-amber-800 dark:text-amber-400 text-sm sm:text-base">(iii) දෙවන ලෝක මහා සංග්‍රාමය කෙරෙහි ජපානයේ ක්‍රියාකලාපය බලපෑ ආකාරය කරුණු දෙකක් ඇසුරෙන් විස්තර කරන්න. (ලකුණු 05)</h4>
+                                <span class="text-[11px] bg-amber-200/60 dark:bg-amber-950 text-amber-900 dark:text-amber-300 px-2.5 py-1 rounded-full font-medium whitespace-nowrap">වචන ~100 ක පිළිතුර</span>
+                            </div>
+                            <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-sm">
+                                දෙවන ලෝක යුද්ධය පුළුල් වීමට සහ ආසියාවට යුද්ධය ව්‍යාප්ත වීමට ජපානයේ ආක්‍රමණශීලී ප්‍රතිපත්තිය දැඩි ලෙස බලපෑවේය. ආසියාවේ ජපන් අධිරාජ්‍යයක් බිහි කිරීමේ අරමුණින් මැන්චූරියාව ආක්‍රමණය කිරීම සහ ආසියාතික යටත් විජිත අල්ලා ගැනීම මගින් ජපානය යුරෝපා රටවල් සමඟ ගැටුම් ඇති කර ගත්තේය. විශේෂයෙන්ම 1941 දී හවායි දූපත්වල පර්ල් වරායේ අමෙරිකානු නාවුක කඳවුරට ප්‍රහාර එල්ල කිරීම සහ බ්‍රිතාන්‍ය යටත් විජිත වූ මැලේසියාව, සිංගප්පුරුව සමඟ ලංකාවේ කොළඹ හා ත්‍රිකුණාමලයට බෝම්බ හෙළමින් ජපානය යුද්ධයේ ප්‍රධාන පාර්ශ්වකරුවෙකු විය.
+                            </p>
+                        </div>
+
+                        <!-- Part iv (approx 250 words) -->
+                        <div class="p-4 sm:p-5 bg-indigo-50/50 dark:bg-slate-950/40 rounded-2xl border border-indigo-200 dark:border-slate-800">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
+                                <h4 class="font-bold text-indigo-800 dark:text-indigo-400 text-sm sm:text-base">(iv) දෙවන ලෝක මහා සංග්‍රාමයේ ප්‍රතිඵල තුනක් පැහැදිලි කරන්න. (ලකුණු 06)</h4>
+                                <span class="text-[11px] bg-indigo-200/60 dark:bg-indigo-950 text-indigo-900 dark:text-indigo-300 px-2.5 py-1 rounded-full font-medium whitespace-nowrap">වචන ~250 ක පිළිතුර</span>
+                            </div>
+                            <p class="text-slate-700 dark:text-slate-300 leading-relaxed text-xs sm:text-sm">
+                                මිලියන සංඛ්‍යාත ජීවිත හා දේපළ විනාශ කළ දෙවන ලෝක මහා සංග්‍රාමය ලෝක දේශපාලනයේ සහ සමාජයේ දැවැන්ත පෙරළි රැසක් ඇති කළේය. එහි ප්‍රධාන ප්‍රතිඵල තුනක් පහත පරිදි විස්තර කළ හැකිය:<br><br>
+                                <strong>1. එක්සත් ජාතීන්ගේ සංවිධානය (UN) පිහිටුවීම:</strong> අනාගතයේදී මෙවැනි විනාශකාරී ලෝක යුද්ධ ඇති වීම වැළැක්වීමට සහ ජාත්‍යන්තර සාමය, ආරක්ෂාව හා සහයෝගීතාව තහවුරු කිරීමට 1945 දී එක්සත් ජාතීන්ගේ සංවිධානය බිහි විය.<br><br>
+                                <strong>2. අධිරාජ්‍යවාදය බිඳ වැටී යටත් විජිතවලට නිදහස ලැබීම:</strong> යුද්ධය නිසා බ්‍රිතාන්‍ය සහ ප්‍රංශ වැනි යුරෝපා අධිරාජ්‍යවාදී බලවතුන් ආර්ථික වශයෙන් දැඩි ලෙස දුර්වල වීම හේතුවෙන්, ලංකාව ඇතුළු ආසියාතික සහ අප්‍රිකානු යටත් විජිත වෙත නිදහස ලබා දීමට සිදු විය.<br><br>
+                                <strong>3. නව ලෝක බලවතුන් මතුවීම සහ සීතල යුද්ධය ආරම්භ වීම:</strong> යුද්ධයෙන් පසු අමෙරිකා එක්සත් ජනපදය සහ සෝවියට් රුසියාව ලෝකයේ මහා බලවතුන් ලෙස නැගී සිටි අතර, ලෝකය බල කඳවුරු දෙකකට බෙදී යමින් 'සීතල යුද්ධය' හෙවත් නිරවි යුද්ධය ආරම්භ විය.
+                            </p>
+                        </div>
+                    </div>
+                `
+            }
+        ];
+
+        const STORAGE_KEY = 'history_ol_essays_2026_mobile';
+        let completedEssays = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+        let currentViewMode = 'all'; // 'all' or 'single'
+        let selectedQuestionId = 2;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderEssays();
+            updateProgressBadge();
+            setupThemeToggle();
+        });
+
+        function setViewMode(mode) {
+            currentViewMode = mode;
+            const btnAll = document.getElementById('btn-mode-all');
+            const btnSingle = document.getElementById('btn-mode-single');
+            const selectorContainer = document.getElementById('single-selector-container');
+
+            if (mode === 'all') {
+                btnAll.className = "py-3 px-3 text-xs font-semibold rounded-xl border transition bg-indigo-600 text-white border-indigo-600 shadow-sm flex items-center justify-center gap-1.5";
+                btnSingle.className = "py-3 px-3 text-xs font-semibold rounded-xl border transition bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 flex items-center justify-center gap-1.5";
+                selectorContainer.classList.add('hidden');
+            } else {
+                btnSingle.className = "py-3 px-3 text-xs font-semibold rounded-xl border transition bg-indigo-600 text-white border-indigo-600 shadow-sm flex items-center justify-center gap-1.5";
+                btnAll.className = "py-3 px-3 text-xs font-semibold rounded-xl border transition bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 flex items-center justify-center gap-1.5";
+                selectorContainer.classList.remove('hidden');
+            }
+            renderEssays(document.getElementById('essay-search').value);
+        }
+
+        function selectSingleQuestion(id) {
+            selectedQuestionId = parseInt(id);
+            renderEssays(document.getElementById('essay-search').value);
+        }
+
+        function renderEssays(filter = "") {
+            const container = document.getElementById('essay-container');
+            let dataToRender = essayData;
+
+            if (currentViewMode === 'single') {
+                dataToRender = essayData.filter(item => item.id === selectedQuestionId);
+            }
+
+            if (filter.trim() !== "") {
+                dataToRender = dataToRender.filter(item => 
+                    item.title.toLowerCase().includes(filter.toLowerCase()) || 
+                    item.subtitle.toLowerCase().includes(filter.toLowerCase()) || 
+                    item.content.toLowerCase().includes(filter.toLowerCase())
+                );
+            }
+
+            if (dataToRender.length === 0) {
+                container.innerHTML = `<div class="bg-white dark:bg-slate-900 p-8 rounded-2xl text-center text-slate-500 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm">කිසිදු ප්‍රශ්නයක් හමු නොවීය. වෙනත් මූල පදයක් උත්සාහ කරන්න.</div>`;
+                return;
+            }
+
+            container.innerHTML = dataToRender.map(item => {
+                const isCompleted = !!completedEssays[item.id];
+                return `
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden transition-all duration-200">
+                        <div class="p-4 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col gap-3 bg-slate-50/50 dark:bg-slate-950/50">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                                <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200/50 dark:border-indigo-800/50">II කොටස - රචනා ප්‍රශ්නය</span>
+                                <button onclick="toggleComplete(${item.id})" class="w-full sm:w-auto px-3.5 py-2 text-xs font-medium rounded-xl border transition flex items-center justify-center gap-2 ${isCompleted ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-700 dark:text-emerald-300' : 'bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}">
+                                    <span>${isCompleted ? '✓ අධ්‍යයනය කළ බව සලකුණු කර ඇත' : '○ අධ්‍යයනය කළ බව සලකුණු කරන්න'}</span>
+                                </button>
+                            </div>
+                            <div>
+                                <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">${item.title}</h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">${item.subtitle}</p>
+                            </div>
+                        </div>
+                        <div class="p-4 sm:p-6">
+                            ${item.content}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterEssays() {
+            const query = document.getElementById('essay-search').value;
+            renderEssays(query);
+        }
+
+        function toggleComplete(id) {
+            completedEssays[id] = !completedEssays[id];
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(completedEssays));
+            renderEssays(document.getElementById('essay-search').value);
+            updateProgressBadge();
+        }
+
+        function updateProgressBadge() {
+            const completedCount = Object.values(completedEssays).filter(Boolean).length;
+            document.getElementById('completed-count').innerText = completedCount;
+        }
+
+        function setupThemeToggle() {
+            const toggleBtnMobile = document.getElementById('theme-toggle');
+            const toggleBtnDesktop = document.getElementById('theme-toggle-desktop');
+            
+            const handleToggle = () => {
+                const html = document.documentElement;
+                if (html.classList.contains('dark')) {
+                    html.classList.remove('dark');
+                    html.classList.add('light');
+                } else {
+                    html.classList.remove('light');
+                    html.classList.add('dark');
+                }
+            };
+
+            if (toggleBtnMobile) toggleBtnMobile.addEventListener('click', handleToggle);
+            if (toggleBtnDesktop) toggleBtnDesktop.addEventListener('click', handleToggle);
+        }
+    </script>
+</body>
+</html>
